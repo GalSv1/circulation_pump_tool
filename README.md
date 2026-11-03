@@ -1,8 +1,7 @@
 # EMP Circulation Pump Tool
 
 Standalone bench utility for monitoring and controlling EMP circulation pumps
-over a directly connected CAN adapter. The pump must be disconnected from the
-RCU while this tool is controlling it.
+over a directly connected CAN adapter. Make sure to disconnect the pump from the boat's canbus.
 
 ## Install
 
@@ -57,20 +56,6 @@ at the requested start. At completion or cancellation, the tool commands the
 pump off. JSON scripts use `start`, `end`, `step`, `low_time`, `high_time`,
 `step_time`, `repeats`, and `return_trip`. Older scripts with a single `dwell`
 field remain supported.
-
-## Safety
-
-- Keep the pump electrically and logically disconnected from the RCU during
-  standalone control. The tool bypasses RCU thermal management, ramp limiting,
-  and leakage monitoring.
-- Power the pump from a fused supply that matches its rating; the CAN adapter
-  does not supply pump power. Follow the pump and adapter wiring specifications
-  for CAN_H, CAN_L, reference, and termination.
-- Prime the cooling circuit before operation. Never run the pump dry.
-- Keep a physical power disconnect available. Software cannot guarantee an
-  off command after a CAN failure, process termination, or power loss.
-- Verify low-duty behavior on the bench; commanded duty is not proof of actual
-  pump operation.
 
 Tests:
 
