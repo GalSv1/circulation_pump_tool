@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Circulation Pumps</title>
+  <title>Circulation pump manual control</title>
   <link rel="stylesheet" href="/style.css">
   <script src="/app.js" defer></script>
 </head>
 <body>
   <header>
-    <div class="heading"><img src="/pump.svg" width="56" height="56" alt="Circulation pump schematic"><div><span class="eyebrow">EMP / BENCH CONTROL</span><h1>Circulation pumps</h1></div></div>
-    <div class="session"><span id="connection">Connecting</span><label class="arm"><input id="arm" type="checkbox"> Armed</label><button id="stop-all" class="danger">Stop all</button></div>
+    <div class="heading"><img src="/EMP_logo.png" width="160" height="56" alt="EMP"><div><span class="eyebrow"></span><h1>Circulation pumps</h1></div></div>
+    <div class="session"><span id="connection">Connecting</span><label class="arm"><input id="arm" type="checkbox"> Enable</label><button id="stop-all" class="danger">Stop all</button></div>
   </header>
-  <div class="safety">Standalone pump / CAN dongle. Keep the pump disconnected from the RCU. Prime the cooling circuit before running; never run dry.</div>
+  <div class="safety">Standalone pump / CAN dongle. Keep the pump disconnected from the RCU.</div>
   <div id="error" role="alert" hidden></div>
   <main>
     <aside><div class="pump-heading"><h2>Pumps</h2><button id="scan" type="button" disabled>Scan pumps</button></div><div id="scan-result" role="status" hidden></div><div id="pumps"></div><div class="bus"><span>Pump CAN</span><strong>250 kbit/s</strong><span id="source"></span></div></aside>
     <section class="workspace">
-      <div class="selected-heading"><div><span class="eyebrow" id="pump-address"></span><h2 id="pump-name">Battery / DE port</h2></div><span id="mode" class="tag">Idle</span></div>
+      <div class="selected-heading"><div><span class="eyebrow" id="pump-address"></span><h2 id="pump-name">Battery / DE port</h2></div><div class="pump-indicators"><span id="heartbeat" class="heartbeat offline" title="Based on recent pump status messages">Heartbeat: waiting</span><span id="mode" class="tag">Idle</span></div></div>
       <div class="readings">
         <div><span>Commanded</span><strong id="commanded">0<span>%</span></strong></div>
         <div><span>Measured speed</span><strong id="measured">--</strong></div>
@@ -26,15 +26,15 @@
       </div>
       <div class="status-line"><span id="status">No status received</span><span id="age"></span></div>
       <div class="controls">
-        <section class="manual"><h3>Manual duty</h3><form id="manual-form"><label for="duty">Duty (%)</label><div class="duty-value"><input id="duty" type="number" min="0" max="100" step="0.5" value="60" required><span>%</span></div><input id="duty-slider" type="range" aria-label="Manual duty" min="0" max="100" step="0.5" value="60"><div class="range-label"><span>0%</span><span>100%</span></div><div class="actions"><button type="submit" class="primary" data-run>Apply duty</button><button type="button" id="stop-pump">Stop pump</button></div></form></section>
-        <section class="sequence"><div class="section-heading"><h3>Duty sequence</h3><div class="actions"><button id="load-script" type="button">Load JSON</button><button id="save-script" type="button">Save JSON</button><input id="script-file" type="file" accept=".json,application/json" hidden></div></div>
+        <section class="manual"><h3>Manual duty</h3><form id="manual-form"><label for="duty">Duty (%)</label><div class="duty-value"><input id="duty" type="number" min="0" max="100" step="0.5" value="0" required><span>%</span></div><input id="duty-slider" type="range" aria-label="Manual duty" min="0" max="100" step="0.5" value="0"><div class="range-label"><span>0%</span><span>100%</span></div><div class="actions"><button type="submit" class="primary" data-run>Apply duty</button><button type="button" id="stop-pump">Stop pump</button></div></form></section>
+        <section class="sequence"><div class="section-heading"><h3>Duty sequence</h3><div class="actions"><button id="load-script" type="button">Load sequence</button><button id="save-script" type="button">Save sequence</button><input id="script-file" type="file" accept=".json,application/json" hidden></div></div>
           <form id="sequence-form"><div class="fields">
             <label>Start (%)<input name="start" type="number" min="0" max="100" step="0.5" value="40" required></label>
             <label>End (%)<input name="end" type="number" min="0" max="100" step="0.5" value="80" required></label>
             <label>Step (%)<input name="step" type="number" min="0.5" max="100" step="0.5" value="5" required></label>
             <label>Low-duty hold (s)<input name="low_time" type="number" min="0.1" max="86400" step="0.1" value="5" required></label>
             <label>High-duty hold (s)<input name="high_time" type="number" min="0.1" max="86400" step="0.1" value="5" required></label>
-            <label>Intermediate hold (s)<input name="step_time" type="number" min="0.1" max="86400" step="0.1" value="5" required></label>
+            <label>Step time (s)<input name="step_time" type="number" min="0.1" max="86400" step="0.1" value="5" required></label>
             <label>Repeats<input name="repeats" type="number" min="1" max="10000" step="1" value="1" required></label>
             <label class="check"><input name="return_trip" type="checkbox"> Return to start</label>
           </div><div class="plot"><svg id="plot" viewBox="0 0 600 110" preserveAspectRatio="none" role="img" aria-label="Duty sequence preview"></svg></div><div class="sequence-footer"><span id="preview"></span><button type="submit" class="primary" data-run>Start sequence</button></div></form>

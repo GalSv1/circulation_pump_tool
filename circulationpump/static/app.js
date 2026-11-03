@@ -67,7 +67,7 @@ function preview() {
     const seconds = sequence.durations.reduce((sum,duration) => sum + duration, 0) * plan.repeats;
     $('#preview').textContent = `${sequence.levels.length} steps / pass · ${seconds.toLocaleString()} s total · off at finish`;
     const points = sequence.levels.flatMap((value,index) => [`${index/sequence.levels.length*600},${105-value}`, `${(index+1)/sequence.levels.length*600},${105-value}`]).join(' ');
-    $('#plot').innerHTML = `<polyline points="${points}" fill="none" stroke="#17664e" stroke-width="2" vector-effect="non-scaling-stroke"/>`;
+    $('#plot').innerHTML = `<polyline points="${points}" fill="none" stroke="#073f87" stroke-width="2" vector-effect="non-scaling-stroke"/>`;
   } catch (failure) { $('#preview').textContent = failure.message; $('#plot').replaceChildren(); }
 }
 
@@ -136,11 +136,15 @@ function render() {
     button.querySelector('small span:last-child').textContent = pump.sequence ? 'Cycling' : pump.commanded_duty ? `${pump.commanded_duty}% cmd` : online ? 'Online' : 'Not seen';
   });
   const pump = state.pumps.find(pump => pump.name === selected);
+  const fresh = pump.status_age !== null && pump.status_age <= 3;
+  const heartbeat = $('#heartbeat');
+  heartbeat.classList.toggle('online', fresh);
+  heartbeat.classList.toggle('offline', !fresh);
+  heartbeat.textContent = fresh ? 'Heartbeat: active' : pump.status_age === null ? 'Heartbeat: waiting' : 'Heartbeat: lost';
   $('#pump-name').textContent = pump.label;
   $('#pump-address').textContent = `${pump.name} / 0x${pump.address.toString(16).toUpperCase()}`;
   $('#mode').textContent = pump.sequence ? 'Sequence running' : pump.commanded_duty ? 'Manual command' : 'Idle';
   metric('#commanded', pump.commanded_duty, '%');
-  const fresh = pump.status_age !== null && pump.status_age <= 3;
   metric('#measured', fresh ? pump.status?.measured_duty : null, '%');
   metric('#rpm', fresh ? pump.status?.rpm : null, 'rpm');
   metric('#power', fresh ? pump.status?.power_w : null, 'W');
@@ -163,7 +167,7 @@ function render() {
 
 $('#arm').addEventListener('change', () => {
   const armed = $('#arm').checked;
-  if (armed && !confirm('Confirm the pump is disconnected from the RCU and the cooling circuit is primed. Arm pump control?')) { $('#arm').checked = false; return; }
+  if (armed && !confirm('Confirm the pump is disconnected from the RCU. Enable pump control?')) { $('#arm').checked = false; return; }
   action('arm', {armed, confirmed:armed});
 });
 $('#stop-all').addEventListener('click', () => action('stop', {}));
