@@ -11,7 +11,7 @@ Linux with SocketCAN:
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
-python -m pip install -e .
+python3 -m pip install -e .
 sudo ip link set can0 down
 sudo ip link set can0 type can bitrate 250000
 sudo ip link set can0 up
@@ -25,17 +25,17 @@ with `-c`; `-b` sets bitrate for adapters that accept it.
 ## Use
 
 ```bash
-python -m circulationpump --simulate ui --open
-python -m circulationpump -c can0 ui --open
-python -m circulationpump -c can0 scan --seconds 5
-python -m circulationpump -c can0 status
-python -m circulationpump -c can0 run 0x8B 60 --seconds 30 --yes
-python -m circulationpump -c can0 cycle 0x8B --start 40 --end 80 --step 5 \
+python3 -m circulationpump --simulate ui --open
+python3 -m circulationpump -c can0 ui --open
+python3 -m circulationpump -c can0 scan --seconds 5
+python3 -m circulationpump -c can0 status
+python3 -m circulationpump -c can0 run 0x8B 60 --seconds 30 --yes
+python3 -m circulationpump -c can0 cycle 0x8B --start 40 --end 80 --step 5 \
   --low-time 10 --high-time 20 --step-time 2 --repeats 3 --return-trip --yes
-python -m circulationpump -c can0 cycle 0x8B \
+python3 -m circulationpump -c can0 cycle 0x8B \
   --script circulationpump/cycle.example.json --yes
-python -m circulationpump -c can0 stop 0x8B --yes
-python -m circulationpump -c can0 stop all --yes
+python3 -m circulationpump -c can0 stop 0x8B --yes
+python3 -m circulationpump -c can0 stop all --yes
 ```
 
 The browser UI defaults to `http://127.0.0.1:8326/`. It starts disarmed. Scan
@@ -75,5 +75,5 @@ field remain supported.
 Tests:
 
 ```bash
-python -m unittest circulationpump.test_pump -v
+python3 -m unittest circulationpump.test_pump -v
 ```
