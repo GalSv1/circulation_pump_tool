@@ -5,7 +5,32 @@ over a directly connected CAN adapter. Make sure to disconnect the pump from the
 
 ## Install
 
-Linux with SocketCAN:
+### Windows
+
+Install Python 3.9 or later and the Windows driver/software for your CAN adapter.
+For example, PEAK adapters require PEAK's PCAN-Basic driver. In PowerShell:
+
+```powershell
+py -3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e .
+python -m circulationpump --simulate ui --open
+```
+
+For a PEAK adapter on the documented 250 kbit/s bus, use its PCAN channel:
+
+```powershell
+python -m circulationpump -i pcan -c PCAN_USBBUS1 -b 250000 ui --open
+python -m circulationpump -i pcan -c PCAN_USBBUS1 -b 250000 scan --seconds 5
+```
+
+The interface name and channel depend on the adapter and its `python-can`
+backend. Install any backend-specific package or vendor driver required by
+your adapter; SocketCAN (`socketcan`, `can0`) is Linux-only. See the
+[`python-can` supported interfaces](https://python-can.readthedocs.io/en/stable/interfaces.html)
+for other adapters and their setup requirements.
+
+### Linux with SocketCAN
 
 ```bash
 python3 -m venv .venv
