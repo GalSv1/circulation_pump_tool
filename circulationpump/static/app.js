@@ -2,6 +2,8 @@ const $ = selector => document.querySelector(selector);
 let selected = 'depump_port';
 let state = null;
 let busy = false;
+let dutySelection = null;
+let displayedDuty = null;
 const storageKey = 'circulationpump.sequence.v1';
 const statusNames = {0:'External force overspeed',1:'Reserved',6:'Voltage rollback',16:'Normal operation',17:'Manufacturer diagnostics',20:'Unable to start',22:'Overvoltage shutdown',23:'Undervoltage shutdown',25:'Overtemperature shutdown',27:'Current limited',28:'Maximum control effort',29:'Torque limited',30:'Temperature rollback',31:'Status unavailable'};
 
@@ -66,8 +68,21 @@ function preview() {
     localStorage.setItem(storageKey, JSON.stringify(plan));
     const seconds = sequence.durations.reduce((sum,duration) => sum + duration, 0) * plan.repeats;
     $('#preview').textContent = `${sequence.levels.length} steps / pass · ${seconds.toLocaleString()} s total · off at finish`;
-    const points = sequence.levels.flatMap((value,index) => [`${index/sequence.levels.length*600},${105-value}`, `${(index+1)/sequence.levels.length*600},${105-value}`]).join(' ');
-    $('#plot').innerHTML = `<polyline points="${points}" fill="none" stroke="#073f87" stroke-width="2" vector-effect="non-scaling-stroke"/>`;
+    const passDuration = sequence.durations.reduce((sum,duration) => sum + duration, 0);
+    const chartLeft = 38, chartWidth = 600 - chartLeft;
+    const passWidth = chartWidth / plan.repeats;
+    let elapsed = 0;
+    const points = sequence.levels.flatMap((value,index) => {
+      const start = elapsed / passDuration * passWidth;
+      elapsed += sequence.durations[index];
+      const end = elapsed / passDuration * passWidth;
+      return [`${start},${105-value}`, `${end},${105-value}`];
+    }).join(' ');
+    const grid = [100,75,50,25,0].map(value => {
+      const y = 105 - value;
+      return `<line class="grid-line" x1="${chartLeft}" y1="${y}" x2="600" y2="${y}"/><text class="axis-label" x="${chartLeft - 6}" y="${y + 3}">${value}%</text>`;
+    }).join('');
+    $('#plot').innerHTML = `${grid}<defs><pattern id="sequence-pass" x="${chartLeft}" width="${passWidth}" height="110" patternUnits="userSpaceOnUse"><polyline points="${points}" fill="none" stroke="#073f87" stroke-width="2" vector-effect="non-scaling-stroke"/></pattern></defs><rect x="${chartLeft}" width="${chartWidth}" height="110" fill="url(#sequence-pass)"/>`;
   } catch (failure) { $('#preview').textContent = failure.message; $('#plot').replaceChildren(); }
 }
 
@@ -120,7 +135,10 @@ function render() {
     state.pumps.forEach(pump => {
       const button = document.createElement('button');
       button.className = 'pump'; button.dataset.pump = pump.name;
-      const label = document.createElement('strong'); label.textContent = pump.label;
+      const label = document.createElement('strong');
+      const icon = document.createElement('img'); icon.className = 'pump-icon'; icon.src = '/pump.svg'; icon.alt = ''; icon.hidden = true;
+      const name = document.createElement('span'); name.textContent = pump.label;
+      label.append(icon, name);
       const details = document.createElement('small'); details.append(document.createElement('span'), document.createElement('span'));
       button.append(label, details);
       button.addEventListener('click', () => { selected = pump.name; render(); });
@@ -134,8 +152,20 @@ function render() {
     button.querySelector('small span').textContent = `0x${pump.address.toString(16).toUpperCase()}`;
     const online = pump.status_age !== null && pump.status_age <= 3;
     button.querySelector('small span:last-child').textContent = pump.sequence ? 'Cycling' : pump.commanded_duty ? `${pump.commanded_duty}% cmd` : online ? 'Online' : 'Not seen';
+    const running = Boolean(pump.sequence || pump.commanded_duty > 0);
+    button.querySelector('.pump-icon').hidden = !running;
+    button.classList.toggle('running', running);
   });
   const pump = state.pumps.find(pump => pump.name === selected);
+  const dutyInput = $('#duty'), dutySlider = $('#duty-slider');
+  const dutyInputActive = document.activeElement === dutyInput || document.activeElement === dutySlider;
+  if (selected !== dutySelection || (!dutyInputActive && pump.commanded_duty !== displayedDuty)) {
+    const duty = pump.commanded_duty ?? 0;
+    dutyInput.value = duty;
+    dutySlider.value = duty;
+    dutySelection = selected;
+    displayedDuty = pump.commanded_duty;
+  }
   const fresh = pump.status_age !== null && pump.status_age <= 3;
   const heartbeat = $('#heartbeat');
   heartbeat.classList.toggle('online', fresh);

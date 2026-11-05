@@ -32,7 +32,10 @@ aside h2 { font-size:13px; color:var(--muted); margin:0 12px 16px; }
 .pump + .pump { border-top:1px solid var(--line); }
 .pump.selected { border-left-color:var(--blue); background:#e8eef7; }
 .pump strong { display:block; font-size:14px; font-weight:500; margin-bottom:7px; }
+.pump strong { display:flex; align-items:center; gap:8px; font-size:14px; font-weight:500; margin-bottom:7px; }
+.pump-icon { width:20px; height:20px; flex:none; }
 .pump small { display:flex; justify-content:space-between; color:var(--muted); font:12px 'IBM Plex Mono','Liberation Mono',monospace; }
+@media(prefers-reduced-motion:no-preference) { .pump.running .pump-icon { animation:pump-spin 1.4s linear infinite; } @keyframes pump-spin { to { transform:rotate(360deg); } } }
 .bus { margin:32px 12px 0; display:grid; gap:6px; color:var(--muted); font-size:12px; }
 .bus strong { color:var(--ink); font-weight:500; }
 .workspace { min-width:0; padding:28px 32px; }
@@ -64,8 +67,10 @@ input[type=range] { width:100%; accent-color:var(--blue); margin:0; }
 .fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
 .fields label:not(.check) { display:grid; gap:7px; }
 .check { display:flex; align-items:center; gap:8px; padding-top:21px; }
-.plot { height:110px; margin:22px 0 10px; background:repeating-linear-gradient(to top,transparent,transparent 26px,#e7ece9 27px,#e7ece9 28px); border-bottom:1px solid var(--line); }
+.plot { height:110px; margin:22px 0 10px; border-bottom:1px solid var(--line); }
 .plot svg { width:100%; height:100%; display:block; }
+.plot .grid-line { stroke:var(--line); stroke-width:1; }
+.plot .axis-label { fill:var(--muted); font:10px 'IBM Plex Mono','Liberation Mono',monospace; text-anchor:end; }
 .sequence-footer { justify-content:space-between; font-size:12px; color:var(--muted); }
 #preview { overflow-wrap:anywhere; }
 #job { margin-top:16px; font-size:12px; color:var(--blue); }

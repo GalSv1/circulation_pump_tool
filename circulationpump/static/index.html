@@ -9,7 +9,7 @@
 </head>
 <body>
   <header>
-    <div class="heading"><img src="/EMP_logo.png" width="160" height="56" alt="EMP"><div><span class="eyebrow"></span><h1>Circulation pumps</h1></div></div>
+    <div class="heading"><img src="/EMP_logo.png" width="160" height="56" alt="EMP"><div><span class="eyebrow"></span><h1>Circulation pump tool</h1></div></div>
     <div class="session"><span id="connection">Connecting</span><label class="arm"><input id="arm" type="checkbox"> Enable</label><button id="stop-all" class="danger">Stop all</button></div>
   </header>
   <div class="safety">Standalone pump / CAN dongle. Keep the pump disconnected from the RCU.</div>
@@ -37,7 +37,7 @@
             <label>Step time (s)<input name="step_time" type="number" min="0.1" max="86400" step="0.1" value="5" required></label>
             <label>Repeats<input name="repeats" type="number" min="1" max="10000" step="1" value="1" required></label>
             <label class="check"><input name="return_trip" type="checkbox"> Return to start</label>
-          </div><div class="plot"><svg id="plot" viewBox="0 0 600 110" preserveAspectRatio="none" role="img" aria-label="Duty sequence preview"></svg></div><div class="sequence-footer"><span id="preview"></span><button type="submit" class="primary" data-run>Start sequence</button></div></form>
+          </div><div class="plot"><svg id="plot" viewBox="0 0 600 110" preserveAspectRatio="none" role="img" aria-label="Duty sequence preview with percentage scale"></svg></div><div class="sequence-footer"><span id="preview"></span><button type="submit" class="primary" data-run>Start sequence</button></div></form>
           <div id="job" hidden><progress id="progress" max="100" value="0"></progress><span id="remaining"></span></div>
         </section>
       </div>
